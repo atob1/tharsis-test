@@ -1,46 +1,12 @@
-# Advanced Sample Hardhat Project
+# Tharsis Test Project
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+This project contains a solidity contract that mints a simple ERC20 token and contains a script that transfers 10 tokens from User1 to User2. It also contains a test file to test this transfer function. 
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+To run the code:
+1. Clone the repo.
+2. Cd to the evmos sub-directory and then run ./init.sh to start up an evmos node containing 2 accounts.
+3. Run npx hardhat test inside of the evmos sub-directory to test the code. 
 
-Try running some of the following tasks:
+Some technical decisions that I made were to create another account in the ./init.sh script to start an evmos node in order to have a second account to transfer 10 tokens to; use the Open Zepplin ERC20 contract as it has some added (safer) functionality like  the increaseAllowance function that is useful to call from the client side; and lastly, I added .wait() to the end of the increaseAllowance and transferFrom function calls to allow for the transactions to be mined on the local evmos node.
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
-
-# Etherscan verification
-
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
-
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
-
-```shell
-hardhat run --network ropsten scripts/sample-script.ts
-```
-
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
-
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
-
-# Performance optimizations
-
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+To accomplish the first step of running the node I followed the instructions at https://evmos.dev/quickstart/installation.html to install go, set the correct go path, clone the evmos repo, and then install the needed packages with make install. I then used the init.sh start-up script to start running an evmos node locally, albeit slightly changed. I added code to generate another account in the init.sh file to have a recipient account to send the funds from the first account to when testing the transferFrom function. For step 3 of creating an ERC20 contract I referenced the Open Zepplin documentation (https://docs.openzeppelin.com/contracts/2.x/erc20) and then created a transfer script to deploy the contract, increaseAllowance() for the sender, and then call transferFrom() to transfer funds from the sender to the recipient account. I first tested the contract on the hardhat local network before changing the hardhat.config.ts file to set my local evmos node (at http://localhost:8545/) as the default network. I lastly wrote a unit test for my transfer script using Ethers.js and Waffle to ensure that the script was correctly transferring 10 tokens from the sender to the recipient. 
